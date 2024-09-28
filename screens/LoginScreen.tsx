@@ -1,6 +1,6 @@
 import { View } from 'react-native'
-import React from 'react'
-import { Text, Card, Input, Button} from '@rneui/base';
+import React, { useState } from 'react'
+import { Text, Card, Input, Button, Icon} from '@rneui/base';//--------------------------
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useForm, Controller } from 'react-hook-form';
@@ -9,6 +9,7 @@ import { AxiosError } from "../Services/http service";
 import Toast from 'react-native-toast-message';
 
 const LoginScreen = ():React.JSX.Element => {
+    const [showPassword,setShowPassword] = useState(false);//-------------------------------------
     //1.define validation with Tup schema
     const schema = yup.object().shape({
     email:yup
@@ -76,8 +77,16 @@ const LoginScreen = ():React.JSX.Element => {
                 <Input
                     placeholder='Password'
                     leftIcon={{name:'key'}}
-                    keyboardType='number-pad'
-                    secureTextEntry
+                    rightIcon = {//--------------------------------
+                        //เพิ่ม Icon สำหรับการแสดงรหัสผ่าน
+                        <Icon
+                            name = {showPassword?"eye":"eye-off"}
+                            type = "feather"
+                            onPress={()=>setShowPassword(!showPassword)}
+                        />
+                    }
+                    keyboardType='default'//---------------------------------------------
+                    secureTextEntry = {!showPassword}//------------------------------------
                     onBlur = {onBlur}
                     onChangeText = {onChange}
                     value = {value}
