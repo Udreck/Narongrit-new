@@ -1,11 +1,18 @@
-import { View, Text, Button, StyleSheet, Alert } from 'react-native'
+import { View, Button, StyleSheet, Alert } from 'react-native'
 import React, {useLayoutEffect} from 'react'
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import AppLogo from '../components/AppLogo';
 import {HeaderButton, HeaderButtons, Item} from 'react-navigation-header-buttons';
 
+import { useAppDispatch, useAppSelector } from '../redux-toolkit/hooks';
+import { logout } from '../Services/auth-service';
+import { selectAuthState, setIsLogin } from '../auth/auth-slide';
+import { Text } from '@rneui/base';//ใช้ component Text จาก React Native Base
+
 const HomeScreen = ({ navigation, route }: any): React.JSX.Element => {
+  const dispatch = useAppDispatch();
+  const {profile} = useAppSelector(selectAuthState);
 
   const MaterialHeaderButton = (props: any) =>(
     // the `props` here come from <Item ... />
@@ -27,8 +34,9 @@ const HomeScreen = ({ navigation, route }: any): React.JSX.Element => {
       ),
       headerRight:()=>(
         <HeaderButtons HeaderButtonComponent={MaterialHeaderButton}>
-        <Item title= "logout" iconName= "logout" onPress={()=>{
-          Alert.alert("Log out", "Close Menu")
+        <Item title= "logout" iconName= "logout" onPress={async()=>{
+          await logout();
+          dispatch(setIsLogin(false));
         }}/>
       </HeaderButtons>
       )
@@ -49,7 +57,14 @@ const HomeScreen = ({ navigation, route }: any): React.JSX.Element => {
   return (
     <View style={styles.container}>
       <MaterialIcon name="home" size={40} color='pink'/>
-      <Text>HomeScreen</Text>
+      {profile?(
+        <>
+          <Text h3>Welcome {profile.name}</Text>
+          <Text>
+            Email:{profile.email} ID:{profile.id} Role:{profile.role}
+          </Text>
+        </>
+      ):null}
       <Button title="About us" onPress={gotoAbout} />
       {/* <View style={styles.postContainer}>
         <Button

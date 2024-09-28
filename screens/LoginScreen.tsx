@@ -1,15 +1,18 @@
 import { View } from 'react-native'
 import React, { useState } from 'react'
-import { Text, Card, Input, Button, Icon} from '@rneui/base';//--------------------------
+import { Text, Card, Input, Button, Icon} from '@rneui/base';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useForm, Controller } from 'react-hook-form';
 import { login } from '../Services/auth-service';
 import { AxiosError } from "../Services/http service";
 import Toast from 'react-native-toast-message';
+import { setIsLogin } from '../auth/auth-slide';
+import { useAppDispatch } from '../redux-toolkit/hooks';
 
 const LoginScreen = ():React.JSX.Element => {
-    const [showPassword,setShowPassword] = useState(false);//-------------------------------------
+    const [showPassword,setShowPassword] = useState(false);
+    const dispatch = useAppDispatch();
     //1.define validation with Tup schema
     const schema = yup.object().shape({
     email:yup
@@ -35,7 +38,8 @@ const LoginScreen = ():React.JSX.Element => {
         try{
             const response = await login(data.email, data.password);
             if(response.status===200){
-               Toast.show({type:'success',text1:'Login Success'})
+                dispatch(setIsLogin(true));
+               //Toast.show({type:'success',text1:'Login Success'})
                 //console.log('Login success');
             }
         }catch(error:any){
@@ -77,7 +81,7 @@ const LoginScreen = ():React.JSX.Element => {
                 <Input
                     placeholder='Password'
                     leftIcon={{name:'key'}}
-                    rightIcon = {//--------------------------------
+                    rightIcon = {
                         //เพิ่ม Icon สำหรับการแสดงรหัสผ่าน
                         <Icon
                             name = {showPassword?"eye":"eye-off"}
@@ -85,8 +89,8 @@ const LoginScreen = ():React.JSX.Element => {
                             onPress={()=>setShowPassword(!showPassword)}
                         />
                     }
-                    keyboardType='default'//---------------------------------------------
-                    secureTextEntry = {!showPassword}//------------------------------------
+                    keyboardType='default'
+                    secureTextEntry = {!showPassword}
                     onBlur = {onBlur}
                     onChangeText = {onChange}
                     value = {value}
